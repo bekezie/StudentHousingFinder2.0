@@ -102,13 +102,13 @@ let StudentHousingDBController = function () {
       const db = client.db(DB_NAME);
       const usersCollection = db.collection("users");
       // we will be using the user's email as their username
-      const queryResult = await usersCollection
-        .findOne({
-          authorID: authorID,
-        })
-        .toArray();
+      const queryResult = await usersCollection.findOne({
+        authorID: authorID,
+      });
       console.log(queryResult);
       return queryResult;
+    } catch (err) {
+      console.log(err);
     } finally {
       // we have to close the database connection otherwise we will overload the mongodb service.
       await client.close();
@@ -208,9 +208,9 @@ let StudentHousingDBController = function () {
       });
       await client.connect();
       const db = client.db(DB_NAME);
-      const listingsCollection = db.collection("listings");
+      const usersCollection = db.collection("listings");
       // we will be using the user's email as their username
-      const queryResult = await listingsCollection
+      const queryResult = await usersCollection
         .aggregate([
           {
             $addFields: {
@@ -220,6 +220,8 @@ let StudentHousingDBController = function () {
         ])
         .toArray();
       return queryResult;
+    } catch (err) {
+      console.log(err);
     } finally {
       // we have to close the database connection otherwise we will overload the mongodb service.
       await client.close();
@@ -316,11 +318,11 @@ let StudentHousingDBController = function () {
       await client.connect();
       const db = client.db(DB_NAME);
       const listingsCollection = db.collection("listings");
+      console.log("attempting to get listings");
       // we will be using the user's email as their username
       const queryResult = await listingsCollection
         .find({ _id: new ObjectId(listingID) })
         .toArray();
-
       return queryResult;
     } finally {
       // we have to close the database connection otherwise we will overload the mongodb service.
@@ -476,28 +478,29 @@ let StudentHousingDBController = function () {
     }
   };
 
-  // studentHousingDB.getMessages = async (sender, receiver) => {
-  //   let db, stmt;
-  //   try {
-  //     db = await connect();
-
-  //     stmt = await db.prepare(`SELECT *
-  //       FROM Message
-  //       WHERE (sender IS :sender AND receiver IS :receiver) OR (sender IS :receiver AND receiver IS :sender)
-  //       ORDER BY time DESC
-  //     `);
-
-  //     stmt.bind({
-  //       ":sender": sender,
-  //       ":receiver": receiver,
-  //     });
-
-  //     return await stmt.all();
-  //   } finally {
-  //     stmt.finalize();
-  //     db.close();
-  //   }
-  // };
+  studentHousingDB.getMessages = async (sender, receiver) => {
+    let client;
+    try {
+      client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      await client.connect();
+      const db = client.db(DB_NAME);
+      const messagesCollection = db.collection("messages");
+      // we will be using the user's email as their username
+      const queryResult = await messagesCollection
+        .find({
+          sender: sender,
+          receiver: receiver,
+        })
+        .toArray();
+      return queryResult;
+    } finally {
+      // we have to close the database connection otherwise we will overload the mongodb service.
+      await client.close();
+    }
+  };
 
   studentHousingDB.getAllMessages = async () => {
     let client;
