@@ -291,47 +291,64 @@ let StudentHousingDBController = function () {
     }
   };
 
-  // // get all Listings , may implement pagination later
-  // studentHousingDB.searchListings = async (searches) => {
-  //   let db, stmt;
-  //   db = await connect();
-  //   if (searches != undefined) {
-  //     try {
-  //       stmt = await db.prepare(
-  //         `SELECT Round(Avg(rating),1) AS avgRating, Listing.*
-  //         FROM Rating JOIN Listing ON Listing.listingID = Rating.listingID
-  //         WHERE (Listing.description LIKE :description AND Listing.leaseInMonths = :leaseInMonths
-  //         AND Listing.offer <= offer AND Listing.openingDate = :openingDate AND Listing.size = :size AND Listing.unitType = :unitType)
-  //         GROUP BY Listing.listingID UNION SELECT 0 AS avgRating, Listing.* FROM Listing
-  //         WHERE Listing.listingID NOT IN (SELECT Rating.listingID FROM Rating) ORDER BY Listing.listingID DESC LIMIT 20;
-  //         `
-  //       );
-  //       stmt.bind({
-  //         ":location": searches.location,
-  //         ":openingDate": searches.openingDate,
-  //         ":size": searches.size,
-  //         ":unitType": searches.unitType,
-  //         ":offer": searches.offer,
-  //         ":description": searches.description,
-  //         ":leaseInMonths": searches.leaseInMonths,
-  //       });
-  //       return await stmt.all();
-  //     } catch (err) {
-  //       console.log(err);
-  //     } finally {
-  //       stmt.finalize();
-  //       db.close();
-  //     }
-  //   } else {
-  //     try {
-  //       return await db.all(
-  //         "SELECT Round(Avg(rating),1) AS avgRating,Listing.* FROM Rating JOIN Listing ON Listing.listingID = Rating.listingID GROUP BY Listing.listingID UNION SELECT 0 AS avgRating, Listing.* FROM Listing WHERE Listing.listingID NOT IN (SELECT Rating.listingID FROM Rating)ORDER BY Listing.listingID DESC LIMIT 20;"
-  //       );
-  //     } finally {
-  //       db.close();
-  //     }
-  //   }
-  // };
+  // search Listings , may implement pagination later
+  studentHousingDB.searchListings = async searchCriteria => {
+    let client;
+    try {
+      client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      await client.connect();
+      const db = client.db(DB_NAME);
+      const listingsCollection = db.collection("listings");
+      if (searchCriteria != undefined) {
+        try {
+          let filter = {
+            location: /.*searchCriteria.location.*/,
+            sizeInSqFt: /.*searchCriteria.sizeInSqFt.*/,
+            unitType: searchCriteria.unitType,
+            rentPerMonth: /.*searchCriteria.rentPerMonth.*/,
+            description: /.*searchCriteria.description.*/,
+            openingDate: searchCriteria.openingDate,
+            leaseInMonths: searchCriteria.leaseInMonths,
+            available: searchCriteria.available,
+          };
+          let sort = {
+            listingID: -1,
+          };
+          const queryResult = await listingsCollection
+            .find(filter, { sort: sort })
+            .toArray();
+          return queryResult;
+        } catch (err) {
+          console.log("search unsuccessful", err);
+        }
+      } else {
+        try {
+          const queryResult = await listingsCollection
+            .aggregate([
+              {
+                $sort: {
+                  listingID: -1,
+                },
+              },
+              {
+                $addFields: {
+                  avgRating: { $avg: "$rating.rating" },
+                },
+              },
+            ])
+            .toArray();
+          return queryResult;
+        } catch (err) {
+          console.log("search unsuccessful", err);
+        }
+      }
+    } finally {
+      client.close();
+    }
+  };
 
   // // read selected Listing info
   studentHousingDB.getListingByID = async listingID => {
