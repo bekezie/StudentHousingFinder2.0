@@ -305,14 +305,32 @@ let StudentHousingDBController = function () {
       if (searchCriteria != undefined) {
         try {
           let filter = {
-            location: /.*searchCriteria.location.*/,
-            sizeInSqFt: /.*searchCriteria.sizeInSqFt.*/,
-            unitType: searchCriteria.unitType,
-            rentPerMonth: /.*searchCriteria.rentPerMonth.*/,
-            description: /.*searchCriteria.description.*/,
-            openingDate: searchCriteria.openingDate,
-            leaseInMonths: searchCriteria.leaseInMonths,
-            available: searchCriteria.available,
+            $or: [
+              {
+                location: /.*searchCriteria.location.*/,
+              },
+              {
+                sizeInSqFt: /.*searchCriteria.sizeInSqFt.*/,
+              },
+              {
+                unitType: searchCriteria.unitType,
+              },
+              {
+                rentPerMonth: /.*searchCriteria.rentPerMonth.*/,
+              },
+              {
+                description: /.*searchCriteria.description.*/,
+              },
+              {
+                openingDate: searchCriteria.openingDate,
+              },
+              {
+                leaseInMonths: searchCriteria.leaseInMonths,
+              },
+              {
+                available: searchCriteria.available,
+              },
+            ],
           };
           let sort = {
             listingID: -1,

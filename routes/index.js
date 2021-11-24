@@ -75,72 +75,74 @@ router.post("/user", async function (req, res) {
   }
 });
 
-// /* GET search page. */
-// router.post("/search/Listing", async function (req, res) {
-//   // console.log("Attempting GET /");
-//   console.log("Attempting searches for POST /search/Listing");
+/* GET search page. */
+router.post("/search/Listing", async function (req, res) {
+  // console.log("Attempting GET /");
+  console.log("Attempting searches for POST /search/Listing");
 
-//   const search = {
-//     location: req.body.location,
-//     openingDate: req.body.openingDate,
-//     size: req.body.size,
-//     unitType: req.body.unitType,
-//     offer: req.body.offer,
-//     description: req.body.description,
-//     leaseInMonths: req.body.leaseInMonths,
-//   };
-//   console.log(search);
-//   const listings = await studentHousingDB.searchListings(search);
-//   console.log("got listings");
+  let criteria = req.body;
+  let search = {
+    location: criteria.location,
+    sizeInSqFt: criteria.sizeInSqFt,
+    unitType: criteria.unitType,
+    rentPerMonth: criteria.rentPerMonth,
+    description: criteria.description,
+    openingDate: criteria.openingDate,
+    leaseInMonths: criteria.leaseInMonths,
+    available: criteria.available,
+  };
+  console.log(search);
+  const listings = await studentHousingDB.searchListings(search);
+  console.log("got listings");
 
-//   session = req.session;
+  session = req.session;
 
-//   if (session.userid) {
-//     console.log("got session " + session.userid);
+  if (session.userid) {
+    console.log("got session " + session.userid);
 
-//     let user = await studentHousingDB.getUserByUsername(session.userid);
-//     // console.log("got user", user);
-//     let owner = await studentHousingDB.getOwnerByUsername(user.username);
-//     // console.log("got owner", owner);
+    let user = await studentHousingDB.getUserByUsername(session.userid);
+    // console.log("got user", user);
 
-//     if (owner != undefined) {
-//       let authorID = owner.authorID;
-//       console.log("owner session: ", req.session);
-//       let ownerListings = await studentHousingDB.getListingsByAuthorID(authorID);
+    if (user.authorID != undefined) {
+      let authorID = user.authorID;
+      console.log("owner session: ", req.session);
+      let ownerListings = await studentHousingDB.getListingsByAuthorID(
+        authorID
+      );
 
-//       // console.log("render ownerHomePage ");
-//       res.render("ownerHomePage", {
-//         title: "StudentHousingFinderOwnerHome",
-//         listings: ownerListings,
-//         username: owner.username,
-//         authorID: authorID,
-//       });
-//     } else {
-//       const student = await studentHousingDB.getStudentByUsername(
-//         user.username
-//       );
-//       // console.log("got student", student);
+      // console.log("render ownerHomePage ");
+      res.render("ownerHomePage", {
+        title: "StudentHousingFinderOwnerHome",
+        listings: ownerListings,
+        username: user.username,
+        authorID: authorID,
+      });
+    } else {
+      // const student = await studentHousingDB.getStudentByUsername(
+      //   user.username
+      // );
+      // console.log("got student", student);
 
-//       console.log("render studentHomePage ");
-//       try {
-//         res.render("studentHomePage", {
-//           title: "StudentHousingFinderStudentHome",
-//           listings: listings,
-//           username: user.username,
-//           student: student.firstName,
-//         });
-//       } catch (err) {
-//         console.log("failed to render");
-//       }
-//     }
-//   } else {
-//     // console.log("render index");
-//     res.render("index", {
-//       title: "StudentHousingFinderHome",
-//       listings: listings,
-//     });
-//   }
-// });
+      console.log("render studentHomePage ");
+      try {
+        res.render("studentHomePage", {
+          title: "StudentHousingFinderStudentHome",
+          listings: listings,
+          username: user.username,
+          student: user.firstName,
+        });
+      } catch (err) {
+        console.log("failed to render");
+      }
+    }
+  } else {
+    // console.log("render index");
+    res.render("index", {
+      title: "StudentHousingFinderHome",
+      listings: listings,
+    });
+  }
+});
 
 /* GET logout. */
 router.get("/logout", (req, res) => {
