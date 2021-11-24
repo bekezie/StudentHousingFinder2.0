@@ -56,7 +56,7 @@ let StudentHousingDBController = function () {
         .limit(1)
         .toArray();
 
-      const authorID = max[0].count + 1;
+      let authorID = 1 + parseInt(max[0].count, 10);
 
       // console.log(authorID);
       const newOwner = {
@@ -611,7 +611,7 @@ let StudentHousingDBController = function () {
           $or: [{ sender: username }, { receiver: username }],
         })
         .toArray();
-      console.log(queryResult);
+      // console.log(queryResult);
       return queryResult;
     } finally {
       client.close();
@@ -632,8 +632,8 @@ let StudentHousingDBController = function () {
       const deleteResult = await messagesCollection.deleteOne({
         messageID: messageToDelete.messageID,
       });
-      console.log("to be deleted: ", messageToDelete);
-      console.log("deleted", deleteResult);
+      // console.log("to be deleted: ", messageToDelete);
+      // console.log("deleted", deleteResult);
       return deleteResult;
     } finally {
       client.close();

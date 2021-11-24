@@ -266,10 +266,10 @@ router.get("/listings/:listingID", async function (req, res) {
       listing.listingID,
       session.userid
     );
-    console.log(rating);
-    // console.log("Got listing details", listing);
+    // console.log(rating);
+    console.log("authorID:", parseInt(listing.authorID));
     const owner = await studentHousingDB.getOwnerByAuthorID(listing.authorID);
-    // console.log("Got owner " + owner.username);
+    console.log("Got owner ", owner);
     const msgs = await studentHousingDB.getMessages(
       session.userid,
       owner.username,
@@ -343,7 +343,7 @@ router.post("/listings/delete", async function (req, res) {
   // console.log("**attempting POST delete listing");
 
   const listingID = req.body.listingID;
-  console.log(listingID);
+  // console.log(listingID);
   // console.log("delete listing", listingID);
   session = req.session;
 
@@ -381,12 +381,28 @@ router.post("/message/delete", async function (req, res) {
   // console.log("Got delete message", msg);
   try {
     await studentHousingDB.deleteMessage(msg);
+    console.log("Message deleted");
+  } catch (err) {
+    console.log("Message not deleted:" + err);
+  }
+
+  res.redirect("/listings/" + msg.listingID);
+});
+
+/* POST delete message. */
+router.post("/message/owner/delete", async function (req, res) {
+  // console.log("Got post message/delete");
+
+  const msg = req.body;
+  // console.log("Got delete message", msg);
+  try {
+    await studentHousingDB.deleteMessage(msg);
     // console.log("Message deleted");
   } catch (err) {
     // console.log("Message not deleted:" + err);
   }
 
-  res.redirect("/message/" + req.body.username);
+  res.redirect("/message/" + msg.username);
 });
 
 /* POST view message. */

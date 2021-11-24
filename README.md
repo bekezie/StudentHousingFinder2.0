@@ -9,20 +9,28 @@ An application that lets users explore a list of student housing.
 It will support:
 
 - CRUD dorm/apartment listings
-- Sort alphabetically and filter by location/building, cost, or by user input \*
+- Sort and filter by location/building, cost, or by user input
 - Owner/renter (user) sign-up/login
 - CRUD user information
 - Users can rate dorm/apartment listings
-- Monthly/annual statistics for owners/renters\*
-- Favorites for users\*
-- \*We were not able to finish implementing these items in full.
 
 ## Installation and Execution
 
 1. Clone the repository
 2. In terminal: `npm install`
-3. In terminal: `npm start`
-4. In browser, go to http://localhost:3000
+   Imports:
+3. To import listings:
+   `mongoimport -h localhost:27017 -d project2 -c listings --file ./db/Listing.json --jsonArray`
+4. To import messages:
+   `mongoimport -h localhost:27017 -d project2 -c messages --file ./db/Message.json --jsonArray`
+5. To import users:
+   `mongoimport -h localhost:27017 -d project2 -c users --file ./db/Student.json --jsonArray`
+   `mongoimport -h localhost:27017 -d project2 -c users --file ./db/Owner.json --jsonArray`
+6. To import schools:
+   `mongoimport -h localhost:27017 -d project2 -c schools --file ./db/Schools.json --jsonArray`
+
+7. In terminal: `npm start`
+8. In browser, go to http://localhost:3000
 
 > _Register and Sign In Note:
 > Because owners and students have different permissions for listings, page will look different depending on whether you sign up as an owner or a student._
@@ -39,7 +47,8 @@ Bernard Ekezie (https://github.com/bekezie) & Ely (Esther) Lam (https://github.c
 - CRUD operations on the messages between users and ensuring each message has one distinct sender and one distinct receiver.
 - Making sure users can only delete messages they sent.
 - Create warning if users try to register with non-unique username.
-- Search listings by certain criteria (finds all that matches at least one of the search criteria but not all criteria)
+- Search listings by certain criteria (finds all that matches at least one of the search criteria but not all criteria).
+- Making instructions on setup and importing collections to localhost.
 
 @Bernard Ekezie implemented:
 
@@ -51,8 +60,9 @@ Bernard Ekezie (https://github.com/bekezie) & Ely (Esther) Lam (https://github.c
 # Project 2 (Part 2: Design):
 
 Link to Business Requirements: https://docs.google.com/document/d/1U-KUPu-nW8fwHIpMbF03xYfmWVMdTYuDPdS_fJP_PdY/edit
-[embed]design/CS5200_Project2_BusinessRequirements.pdf[/embed]
-[embed]https://docs.google.com/document/d/1U-KUPu-nW8fwHIpMbF03xYfmWVMdTYuDPdS_fJP_PdY/edit [/embed]
+\*Found in ./design/CS5200_Project2_BusinessRequirements.pdf
 
+UML Diagram
+![Logo](design/Project2-UML.png)
 ER Diagram
-![Logo](screenshots/Project2-DBMS-ERD.png)
+![Logo](design/Project2-DBMS-ERD.png)
