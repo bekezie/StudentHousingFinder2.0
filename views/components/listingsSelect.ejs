@@ -12,12 +12,13 @@
   >
     <div>
       <h2><%= l.title %></h2>
-      <h3><%= l.location %></h2>
+      <h3><%= l.location %></h3>
       <br />
-      <%= l.description %> <br />
+      <%= l.description %>
+      <br />
       <% if (l.avgRating > 0) { %>
       <h3>Overall Rating: <%=l.avgRating%></h3>
-      <%}else { %>
+      <% } else { %>
       <h3>No Ratings Yet</h3>
       <% } %>
     </div>

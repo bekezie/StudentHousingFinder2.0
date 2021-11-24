@@ -234,6 +234,11 @@ let StudentHousingDBController = function () {
       const queryResult = await usersCollection
         .aggregate([
           {
+            $sort: {
+              listingID: -1,
+            },
+          },
+          {
             $addFields: {
               avgRating: { $avg: "$rating.rating" },
             },
@@ -341,9 +346,9 @@ let StudentHousingDBController = function () {
       const listingsCollection = db.collection("listings");
       // console.log("attempting to get listings");
       // we will be using the user's email as their username
-      const queryResult = await listingsCollection
-        .find({ listingID: listingID })
-        .toArray();
+      const queryResult = await listingsCollection.findOne({
+        listingID: listingID,
+      });
       return queryResult;
     } finally {
       // we have to close the database connection otherwise we will overload the mongodb service.
@@ -352,7 +357,7 @@ let StudentHousingDBController = function () {
   };
 
   // // read selected Listing info
-  studentHousingDB.getListingByAuthorID = async authorID => {
+  studentHousingDB.getListingsByAuthorID = async authorID => {
     let client;
     try {
       client = new MongoClient(uri, {

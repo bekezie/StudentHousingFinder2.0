@@ -26,7 +26,7 @@ router.get("/", async function (req, res) {
       //const authorID = owner.authorID;
       const authorID = user.authorID;
       // console.log("owner session: ", req.session);
-      const ownerListings = await studentHousingDB.getListingByAuthorID(
+      const ownerListings = await studentHousingDB.getListingsByAuthorID(
         authorID
       );
       console.log("render ownerHomePage");
@@ -106,7 +106,7 @@ router.post("/user", async function (req, res) {
 //     if (owner != undefined) {
 //       let authorID = owner.authorID;
 //       console.log("owner session: ", req.session);
-//       let ownerListings = await studentHousingDB.getListingByAuthorID(authorID);
+//       let ownerListings = await studentHousingDB.getListingsByAuthorID(authorID);
 
 //       // console.log("render ownerHomePage ");
 //       res.render("ownerHomePage", {
@@ -354,21 +354,21 @@ router.post("/listings/delete", async function (req, res) {
   res.redirect("/");
 });
 
-// /* POST send message. */
-// router.post("/message/create", async function (req, res) {
-//   // console.log("Got post message/create");
+/* POST send message. */
+router.post("/message/create", async function (req, res) {
+  // console.log("Got post message/create");
 
-//   const msg = req.body;
-//   console.log("Got create message", msg);
-//   try {
-//     await studentHousingDB.createMessage(msg);
-//     // console.log("Message created");
-//   } catch (err) {
-//     // console.log("Message not created:" + err);
-//   }
+  const msg = req.body;
+  console.log("Got create message", msg);
+  try {
+    await studentHousingDB.createMessage(msg);
+    // console.log("Message created");
+  } catch (err) {
+    // console.log("Message not created:" + err);
+  }
 
-//   res.redirect("/listings/" + msg.listingID);
-// });
+  res.redirect("/listings/" + msg.listingID);
+});
 
 // /* POST send message. */
 // router.post("/message/delete", async function (req, res) {
