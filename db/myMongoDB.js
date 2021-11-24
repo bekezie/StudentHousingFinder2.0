@@ -115,6 +115,7 @@ let StudentHousingDBController = function () {
     }
   };
 
+  // this function will query the database for a user object by using an username string
   studentHousingDB.getUserByUsername = async query => {
     let client;
     try {
@@ -136,8 +137,6 @@ let StudentHousingDBController = function () {
       await client.close();
     }
   };
-
-  // this function will query the database for a user object by using an username string
 
   // this function will query the database for a user object by using an username string and password
   studentHousingDB.getUserCred = async user => {

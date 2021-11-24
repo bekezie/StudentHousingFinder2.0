@@ -39,6 +39,7 @@ Bernard Ekezie (https://github.com/bekezie) & Ely (Esther) Lam (https://github.c
 - CRUD operations on the messages between users and ensuring each message has one distinct sender and one distinct receiver.
 - Making sure users can only delete messages they sent.
 - Create warning if users try to register with non-unique username.
+- Search listings by certain criteria (finds all that matches at least one of the search criteria but not all criteria)
 
 @Bernard Ekezie implemented:
 
@@ -49,11 +50,9 @@ Bernard Ekezie (https://github.com/bekezie) & Ely (Esther) Lam (https://github.c
 
 # Project 2 (Part 2: Design):
 
-Link to Business Requirements: https://docs.google.com/document/d/1HfzjBWUDes1UxDi9yob0D4R6YMiWGgLErjpFZMa3-3s/edit
-Link to Relational Schema with Functional Dependencies: https://docs.google.com/document/d/1NBktMtUlr1iGigkE8cz2e_R3NzSCWksHU_thtI5k96I/edit
-
-UML Diagram
-![Logo](screenshots/Project1_UML.png)
+Link to Business Requirements: https://docs.google.com/document/d/1U-KUPu-nW8fwHIpMbF03xYfmWVMdTYuDPdS_fJP_PdY/edit
+[embed]design/CS5200_Project2_BusinessRequirements.pdf[/embed]
+[embed]https://docs.google.com/document/d/1U-KUPu-nW8fwHIpMbF03xYfmWVMdTYuDPdS_fJP_PdY/edit [/embed]
 
 ER Diagram
-![Logo](screenshots/Project1_ERD.png)
+![Logo](screenshots/Project2-DBMS-ERD.png)
