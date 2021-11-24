@@ -12,7 +12,7 @@ router.get("/", async function (req, res) {
 
   const listings = await studentHousingDB.getListings();
   // console.log(listings);
-  console.log("got listings");
+  // console.log("got listings");
 
   session = req.session;
 
@@ -20,7 +20,7 @@ router.get("/", async function (req, res) {
     // console.log("got session " + session.userid);
 
     let user = await studentHousingDB.getUserByUsername(session.userid);
-    console.log("got user", user);
+    // console.log("got user", user);
 
     if (user.authorID != undefined) {
       //const authorID = owner.authorID;
@@ -29,7 +29,7 @@ router.get("/", async function (req, res) {
       const ownerListings = await studentHousingDB.getListingByAuthorID(
         authorID
       );
-      console.log("render ownerHomePage ");
+      console.log("render ownerHomePage");
       res.render("ownerHomePage", {
         title: "StudentHousingFinderOwnerHome",
         listings: ownerListings,
@@ -37,7 +37,7 @@ router.get("/", async function (req, res) {
         authorID: authorID,
       });
     } else {
-      console.log("render studentHomePage ");
+      console.log("render studentHomePage");
       res.render("studentHomePage", {
         title: "StudentHousingFinderStudentHome",
         listings: listings,
@@ -64,7 +64,7 @@ router.post("/user", async function (req, res) {
   session.userid = req.body.username;
 
   const user = await studentHousingDB.getUserByUsername(session.userid);
-  console.log("got user", user);
+  // console.log("got user", user);
   // const username = user.username;
   // const owner = await studentHousingDB.getOwnerByUsername(username);
   // console.log("got owner", owner);

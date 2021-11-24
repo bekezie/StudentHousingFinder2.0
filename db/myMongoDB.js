@@ -58,7 +58,7 @@ let StudentHousingDBController = function () {
 
       const authorID = max[0].count + 1;
 
-      console.log(authorID);
+      // console.log(authorID);
       const newOwner = {
         username: newUser.username,
         password: newUser.password,
@@ -105,7 +105,7 @@ let StudentHousingDBController = function () {
       const queryResult = await usersCollection.findOne({
         authorID: authorID,
       });
-      console.log(queryResult);
+      // console.log(queryResult);
       return queryResult;
     } catch (err) {
       console.log(err);
@@ -129,7 +129,7 @@ let StudentHousingDBController = function () {
       const queryResult = await usersCollection.findOne({
         username: query,
       });
-      console.log(queryResult);
+      // console.log(queryResult);
       return queryResult;
     } finally {
       // we have to close the database connection otherwise we will overload the mongodb service.
@@ -179,7 +179,28 @@ let StudentHousingDBController = function () {
       const db = client.db(DB_NAME);
       const listingsCollection = db.collection("listings");
 
+      let max = await listingsCollection
+        .aggregate([
+          {
+            $group: {
+              _id: "$_id",
+              count: {
+                $max: "$listingID",
+              },
+            },
+          },
+        ])
+        .sort({ count: -1 })
+        .limit(1)
+        .toArray();
+      // console.log(max);
+      // console.log(parseInt(max[0].count, 10));
+
+      let listingID = 1 + parseInt(max[0].count, 10);
+      // console.log(listingID);
+
       const newlisting = {
+        listingID: listingID.toString(),
         title: newListing.title,
         location: newListing.location,
         unitType: newListing.unitType,
@@ -318,10 +339,10 @@ let StudentHousingDBController = function () {
       await client.connect();
       const db = client.db(DB_NAME);
       const listingsCollection = db.collection("listings");
-      console.log("attempting to get listings");
+      // console.log("attempting to get listings");
       // we will be using the user's email as their username
       const queryResult = await listingsCollection
-        .find({ _id: new ObjectId(listingID) })
+        .find({ listingID: listingID })
         .toArray();
       return queryResult;
     } finally {
@@ -414,7 +435,7 @@ let StudentHousingDBController = function () {
       const contactsCollection = db.collection("listings");
       const updateResult = await contactsCollection.updateOne(
         {
-          _id: new ObjectId(listingToUpdate.listingID),
+          listingID: listingToUpdate.listingID,
         },
         {
           $set: {
