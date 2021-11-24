@@ -11,7 +11,7 @@ router.get("/", async function (req, res) {
   // console.log("Attempting searches for GET /");
 
   const listings = await studentHousingDB.getListings();
-  console.log(listings);
+  // console.log(listings);
   console.log("got listings");
 
   session = req.session;
@@ -284,9 +284,9 @@ router.get("/listings/:listingID", async function (req, res) {
 
     res.render("listingDetailsPage", {
       listing,
-      user: session.userid,
+      username: session.userid,
       rating,
-      owner: owner,
+      owner,
       time,
       msgs,
     });
@@ -304,10 +304,10 @@ router.get("/listings/update/:listingID", async function (req, res) {
 
   const listing = await studentHousingDB.getListingByID(listingID);
   console.log("Listing updated");
-  console.log("here is the Listing! " + listing);
+  console.log("here is the Listing! ", listing);
 
   session = req.session;
-  console.log("session.userid: ", session);
+  // console.log("session.userid: ", session);
 
   res.render("listingUpdatePage", {
     listing: listing[0],
@@ -324,9 +324,9 @@ router.post("/listings/update", async function (req, res) {
 
   try {
     await studentHousingDB.updateListing(listing);
-    // console.log("Listing updated");
+    console.log("Listing updated");
   } catch (err) {
-    // console.log("Listing not updated: " + err);
+    console.log("Listing not updated: ", err);
   }
 
   session = req.session;

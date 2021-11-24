@@ -1,11 +1,26 @@
 <form action="/listings/update" method="POST">
   <div>
-    <input
-      class="form-control"
-      name="listingID"
-      type="hidden"
-      value="<%= listing._id %>"
-    />
+    <label class="form-label">
+      <input
+        class="form-control"
+        id="listingID"
+        name="listingID"
+        type="hidden"
+        value="<%= listing._id %>"
+      />
+    </label>
+  </div>
+  <div>
+    <label class="form-label"
+      >Title:
+      <input
+        class="form-control"
+        name="title"
+        type="text"
+        value="<%= listing.title %>"
+        required
+      />
+    </label>
   </div>
   <div>
     <label class="form-label"
@@ -15,30 +30,6 @@
         name="location"
         type="text"
         value="<%= listing.location %>"
-        required
-      />
-    </label>
-  </div>
-  <div>
-    <label class="form-label"
-      >Opening Date:
-      <input
-        class="form-control"
-        name="openingDate"
-        type="date"
-        value="<%= listing.openingDate %>"
-      />
-    </label>
-  </div>
-  <div>
-    <label class="form-label"
-      >Size (Sqft):
-      <input
-        class="form-control"
-        name="size"
-        type="number"
-        placeholder="250"
-        value="<%= listing.size %>"
         required
       />
     </label>
@@ -54,13 +45,27 @@
   </div>
   <div>
     <label class="form-label"
-      >Offer (Per month):
+      >Size (Sqft):
       <input
         class="form-control"
-        name="offer"
+        name="sizeInSqFt"
+        type="number"
+        placeholder="550"
+        value="<%= listing.sizeInSqFt %>"
+        required
+      />
+    </label>
+  </div>
+
+  <div>
+    <label class="form-label"
+      >Rent (Per month):
+      <input
+        class="form-control"
+        name="rentPerMonth"
         type="number"
         placeholder="1000"
-        value="<%= listing.offer %>"
+        value="<%= listing.rentPerMonth %>"
       />
     </label>
   </div>
@@ -75,6 +80,17 @@
       >
 <%= listing.description %></textarea
       >
+    </label>
+  </div>
+  <div>
+    <label class="form-label"
+      >Opening Date:
+      <input
+        class="form-control"
+        name="openingDate"
+        type="date"
+        value="<%= listing.openingDate %>"
+      />
     </label>
   </div>
   <div>
@@ -109,6 +125,5 @@
       />
     </label>
   </div>
-
   <button type="submit" class="btn btn-primary">Update Listing</button>
 </form>

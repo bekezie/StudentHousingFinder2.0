@@ -420,9 +420,9 @@ let StudentHousingDBController = function () {
           $set: {
             title: listingToUpdate.title,
             location: listingToUpdate.location,
-            sizeInSqFt: listingToUpdate.size,
+            sizeInSqFt: listingToUpdate.sizeInSqFt,
             unitType: listingToUpdate.unitType,
-            rentPerMonth: listingToUpdate.offer,
+            rentPerMonth: listingToUpdate.rentPerMonth,
             description: listingToUpdate.description,
             openingDate: listingToUpdate.openingDate,
             leaseInMonths: listingToUpdate.leaseInMonths,

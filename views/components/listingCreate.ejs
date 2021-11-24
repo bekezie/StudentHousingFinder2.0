@@ -2,20 +2,31 @@
 <form action="/listings/create" method="POST">
   <div>
     <label class="form-label"
+      >Title:
+      <input class="form-control" name="title" type="text" required />
+    </label>
+  </div>
+  <div>
+    <label class="form-label"
       >Location:
       <input class="form-control" name="location" type="text" required />
     </label>
   </div>
   <div>
-    <label class="form-label"
-      >Opening Date:
-      <input
-        class="form-control"
-        name="openingDate"
-        type="text"
-        placeholder="MM/DD/YYYY"
-      />
+    <label for="unitType" class="form-label"
+      >Unit type:
+      <select class="form-select" id="unitType" name="unitType">
+        <option value="dorm">Dorm</option>
+        <option value="apartment">Apartment</option>
+      </select>
     </label>
+    <input
+      class="form-control"
+      id="criteria"
+      name="criteria"
+      type="hidden"
+      value="unitType"
+    />
   </div>
   <div>
     <label class="form-label"
@@ -30,22 +41,13 @@
     </label>
   </div>
   <div>
-    <label for="unitType" class="form-label"
-      >Unit type:
-      <select class="form-select" id="unitType" name="unitType">
-        <option value="dorm">Dorm</option>
-        <option value="apartment">Apartment</option>
-      </select>
-    </label>
-  </div>
-  <div>
     <label class="form-label"
-      >Offer (Per month):
+      >Rent (Per month):
       <input
         class="form-control"
         name="offer"
         type="number"
-        placeholder="600"
+        placeholder="1000"
       />
     </label>
   </div>
@@ -59,6 +61,12 @@
         rows="4"
         placeholder="Please provide a short description of the unit."
       ></textarea>
+    </label>
+  </div>
+  <div>
+    <label class="form-label"
+      >Opening Date:
+      <input class="form-control" name="openingDate" type="date" />
     </label>
   </div>
   <div>
