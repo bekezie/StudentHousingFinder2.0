@@ -14,12 +14,16 @@
       action="/message/delete"
       method="POST"
     >
-      <input
-        type="hidden"
-        name="message"
-        id="message"
-        value="<%= m.messageID %>"
-      />
+      <label class="form-label">
+        <input
+          class="form-control"
+          id="messageID"
+          name="messageID"
+          type="hidden"
+          value="<%= m.messageID %>"
+        />
+      </label>
+      <input type="hidden" name="username" value="<%= username %>" />
       <button type="submit" class="btn btn-danger">Delete</button>
     </form>
     <% } else { %>
@@ -40,26 +44,41 @@
           rows="3"
         ></textarea>
       </label>
-      <input
-        type="hidden"
-        name="receiver"
-        id="receiver"
-        value="<%= m.sender %>"
-      />
-      <input
-        class="form-control"
-        id="sender"
-        name="sender"
-        type="hidden"
-        value="<%= m.receiver %>"
-      />
-      <input
-        class="form-control"
-        id="time"
-        name="time"
-        type="hidden"
-        value="<%= time %>"
-      />
+      <label class="form-label">
+        <input
+          type="hidden"
+          name="receiver"
+          id="receiver"
+          value="<%= m.sender %>"
+        />
+      </label>
+      <label class="form-label">
+        <input
+          class="form-control"
+          id="sender"
+          name="sender"
+          type="hidden"
+          value="<%= m.receiver %>"
+        />
+      </label>
+      <label class="form-label">
+        <input
+          class="form-control"
+          id="listingID"
+          name="listingID"
+          type="hidden"
+          value="<%= m.listingID %>"
+        />
+      </label>
+      <label class="form-label">
+        <input
+          class="form-control"
+          id="time"
+          name="time"
+          type="hidden"
+          value="<%= time %>"
+        />
+      </label>
       <button type="submit" class="btn btn-primary">Reply</button>
     </form>
     <% } %>

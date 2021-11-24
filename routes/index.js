@@ -250,27 +250,28 @@ router.get("/listings/:listingID", async function (req, res) {
   if (session.userid != undefined) {
     const listingID = req.params.listingID;
 
-    console.log("Got listing details ", listingID);
+    // console.log("Got listing details ", listingID);
 
     const listing = await studentHousingDB.getListingByID(listingID);
-    console.log("Got listing by ID ", listing);
+    // console.log("Got listing by ID ", listing);
 
     // const studObj = {
     //   listingID: listingID,
     //   user: session.userid,
     // };
-    console.log("listingID, user: ", listingID, session.userid);
+    // console.log("listingID, user: ", listingID, session.userid);
     const rating = await studentHousingDB.getRatingByIDS(
-      listingID,
+      listing.listingID,
       session.userid
     );
     console.log(rating);
-    console.log("Got listing details", listing);
+    // console.log("Got listing details", listing);
     const owner = await studentHousingDB.getOwnerByAuthorID(listing.authorID);
-    console.log("Got owner " + owner.username);
+    // console.log("Got owner " + owner.username);
     const msgs = await studentHousingDB.getMessages(
       session.userid,
-      owner.username
+      owner.username,
+      listing.listingID
     );
 
     let time = new Date().toLocaleTimeString([], {
@@ -300,17 +301,17 @@ router.get("/listings/update/:listingID", async function (req, res) {
   console.log("**attempting POST listings/update/ID");
 
   const listingID = req.params.listingID;
-  console.log("Got listing details ", listingID);
+  // console.log("Got listing details ", listingID);
 
   const listing = await studentHousingDB.getListingByID(listingID);
   console.log("Listing updated");
-  console.log("here is the Listing! ", listing);
+  // console.log("here is the Listing! ", listing);
 
   session = req.session;
   // console.log("session.userid: ", session);
 
   res.render("listingUpdatePage", {
-    listing: listing[0],
+    listing: listing,
     username: session.userid,
   });
 });
@@ -320,7 +321,7 @@ router.post("/listings/update", async function (req, res) {
   // console.log("**attempting POST listings/update");
 
   const listing = req.body;
-  console.log("POST update listing", listing);
+  // console.log("POST update listing", listing);
 
   try {
     await studentHousingDB.updateListing(listing);
@@ -370,69 +371,69 @@ router.post("/message/create", async function (req, res) {
   res.redirect("/listings/" + msg.listingID);
 });
 
-// /* POST send message. */
-// router.post("/message/delete", async function (req, res) {
-//   // console.log("Got post message/delete");
+/* POST delete message. */
+router.post("/message/delete", async function (req, res) {
+  // console.log("Got post message/delete");
 
-//   const msg = req.body;
-//   console.log("Got delete message", msg);
-//   try {
-//     await studentHousingDB.deleteMessage(msg.message);
-//     // console.log("Message deleted");
-//   } catch (err) {
-//     // console.log("Message not deleted:" + err);
-//   }
+  const msg = req.body;
+  // console.log("Got delete message", msg);
+  try {
+    await studentHousingDB.deleteMessage(msg);
+    // console.log("Message deleted");
+  } catch (err) {
+    // console.log("Message not deleted:" + err);
+  }
 
-//   res.redirect("/listings/" + msg.listingID);
-// });
+  res.redirect("/message/" + req.body.username);
+});
 
-// /* POST view message. */
-// router.post("/message/view", async function (req, res) {
-//   // console.log("**attempting POST message/view");
+/* POST view message. */
+router.post("/message/view", async function (req, res) {
+  // console.log("**attempting POST message/view");
 
-//   res.redirect("/message/" + req.body.username);
-// });
+  res.redirect("/message/" + req.body.username);
+});
 
-// /* GET owner's messages page. */
-// router.get("/message/:username", async function (req, res) {
-//   // console.log("**attempting GET owner's messages page");
+/* GET owner's messages page. */
+router.get("/message/:username", async function (req, res) {
+  // console.log("**attempting GET owner's messages page");
 
-//   const username = req.params.username;
-//   // console.log("Got username", username);
+  const username = req.params.username;
+  // console.log("Got username", username);
 
-//   const msgs = await studentHousingDB.getAllMessages(username);
-//   // console.log("Got messages");
+  const msgs = await studentHousingDB.getAllMessages(username);
+  // console.log("Got messages");
 
-//   let time = new Date().toLocaleTimeString([], {
-//     hour: "2-digit",
-//     minute: "2-digit",
-//   });
+  let time = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-//   if (time.substring(0, 1) == 0) {
-//     time = time.substring(1);
-//   }
+  if (time.substring(0, 1) == 0) {
+    time = time.substring(1);
+  }
 
-//   res.render("ownerMessages", {
-//     username: username,
-//     msgs,
-//     time,
-//   });
-// });
+  res.render("ownerMessagesPage", {
+    username,
+    msgs,
+    time,
+  });
+});
 
-// /* POST reply message. */
-// router.post("/message/reply", async function (req, res) {
-//   // console.log("**attempting POST message/view");
+/* POST reply message. */
+router.post("/message/reply", async function (req, res) {
+  // console.log("**attempting POST message/view");
 
-//   const msg = req.body;
-//   // console.log("create message", msg);
-//   try {
-//     await studentHousingDB.createMessage(msg);
-//     // console.log("Message replied");
-//   } catch (err) {
-//     // console.log("Message not replied:" + err);
-//   }
+  const msg = req.body;
+  // console.log("create message", msg);
+  try {
+    await studentHousingDB.createMessage(msg);
+    // console.log("Message replied");
+  } catch (err) {
+    // console.log("Message not replied:" + err);
+  }
 
-//   res.redirect("/message/" + req.body.sender);
-// });
+  res.redirect("/message/" + req.body.sender);
+});
 
 module.exports = router;

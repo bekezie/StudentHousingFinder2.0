@@ -199,20 +199,20 @@ let StudentHousingDBController = function () {
       let listingID = 1 + parseInt(max[0].count, 10);
       // console.log(listingID);
 
-      const newlisting = {
+      const newListingToAdd = {
         listingID: listingID.toString(),
         title: newListing.title,
         location: newListing.location,
         unitType: newListing.unitType,
-        sizeInSqFt: newListing.size,
-        rentPerMonth: newListing.offer,
+        sizeInSqFt: newListing.sizeInSqFt,
+        rentPerMonth: newListing.rentPerMonth,
         description: newListing.description,
         openingDate: newListing.openingDate,
         leaseInMonths: newListing.leaseInMonths,
         available: newListing.available,
         authorID: authorID,
       };
-      const insertResult = await listingsCollection.insertOne(newlisting);
+      const insertResult = await listingsCollection.insertOne(newListingToAdd);
       return insertResult.insertedCount;
     } finally {
       client.close();
@@ -229,9 +229,9 @@ let StudentHousingDBController = function () {
       });
       await client.connect();
       const db = client.db(DB_NAME);
-      const usersCollection = db.collection("listings");
+      const listingsCollection = db.collection("listings");
       // we will be using the user's email as their username
-      const queryResult = await usersCollection
+      const queryResult = await listingsCollection
         .aggregate([
           {
             $sort: {
@@ -437,8 +437,8 @@ let StudentHousingDBController = function () {
       });
       await client.connect();
       const db = client.db(DB_NAME);
-      const contactsCollection = db.collection("listings");
-      const updateResult = await contactsCollection.updateOne(
+      const listingsCollection = db.collection("listings");
+      const updateResult = await listingsCollection.updateOne(
         {
           listingID: listingToUpdate.listingID,
         },
@@ -472,9 +472,9 @@ let StudentHousingDBController = function () {
       });
       await client.connect();
       const db = client.db(DB_NAME);
-      const contactsCollection = db.collection("listings");
-      const deleteResult = await contactsCollection.deleteOne({
-        _id: new ObjectId(listingToDelete),
+      const listingsCollection = db.collection("listings");
+      const deleteResult = await listingsCollection.deleteOne({
+        listingID: listingToDelete,
       });
       return deleteResult;
     } finally {
@@ -496,15 +496,43 @@ let StudentHousingDBController = function () {
 
       await client.connect();
       const db = client.db(DB_NAME);
-      const messageCollection = db.collection("messages");
-      const insertResult = await messageCollection.insertOne(newMessage);
+      const messagesCollection = db.collection("messages");
+      let max = await messagesCollection
+        .aggregate([
+          {
+            $group: {
+              _id: "$_id",
+              count: {
+                $max: "$messageID",
+              },
+            },
+          },
+        ])
+        .sort({ count: -1 })
+        .limit(1)
+        .toArray();
+      // console.log(max);
+      // console.log(parseInt(max[0].count, 10));
+
+      let messageID = 1 + parseInt(max[0].count, 10);
+      // console.log(listingID);
+
+      const newMessageToAdd = {
+        messageID: messageID.toString(),
+        sender: newMessage.sender,
+        receiver: newMessage.receiver,
+        time: newMessage.time,
+        listingID: newMessage.listingID,
+        message: newMessage.message,
+      };
+      const insertResult = await messagesCollection.insertOne(newMessageToAdd);
       return insertResult.insertedCount;
     } finally {
       client.close();
     }
   };
 
-  studentHousingDB.getMessages = async (sender, receiver) => {
+  studentHousingDB.getMessages = async (sender, receiver, listingID) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -514,11 +542,15 @@ let StudentHousingDBController = function () {
       await client.connect();
       const db = client.db(DB_NAME);
       const messagesCollection = db.collection("messages");
-      // we will be using the user's email as their username
+
+      console.log(listingID);
       const queryResult = await messagesCollection
         .find({
-          sender: sender,
-          receiver: receiver,
+          listingID: listingID,
+          $or: [
+            { sender: sender, receiver: receiver },
+            { sender: receiver, receiver: sender },
+          ],
         })
         .toArray();
       return queryResult;
@@ -528,7 +560,7 @@ let StudentHousingDBController = function () {
     }
   };
 
-  studentHousingDB.getAllMessages = async () => {
+  studentHousingDB.getAllMessages = async username => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -540,7 +572,11 @@ let StudentHousingDBController = function () {
       const db = client.db(DB_NAME);
       const messageCollection = db.collection("messages");
       // we will be using the user's email as their username
-      const queryResult = await messageCollection.find().toArray();
+      const queryResult = await messageCollection
+        .find({
+          $or: [{ sender: username }, { receiver: username }],
+        })
+        .toArray();
       console.log(queryResult);
       return queryResult;
     } finally {
@@ -548,48 +584,27 @@ let StudentHousingDBController = function () {
     }
   };
 
-  // studentHousingDB.getMessageByID = async (messageID) => {
-  //   let db, stmt;
-  //   try {
-  //     db = await connect();
-
-  //     stmt = await db.prepare(`SELECT *
-  //       FROM Message
-  //       WHERE messageID = :messageID
-  //     `);
-
-  //     stmt.bind({
-  //       ":messageID": messageID,
-  //     });
-
-  //     return await stmt.get();
-  //   } finally {
-  //     stmt.finalize();
-  //     db.close();
-  //   }
-  // };
-
-  // // delete Message
-  // studentHousingDB.deleteMessage = async (messageToDelete) => {
-  //   let db, stmt;
-  //   try {
-  //     db = await connect();
-
-  //     stmt = await db.prepare(`DELETE FROM
-  //     Message
-  //     WHERE messageID = :messageToDelete
-  //   `);
-
-  //     stmt.bind({
-  //       ":messageToDelete": messageToDelete,
-  //     });
-
-  //     return await stmt.run();
-  //   } finally {
-  //     stmt.finalize();
-  //     db.close();
-  //   }
-  // };
+  // delete Message
+  studentHousingDB.deleteMessage = async messageToDelete => {
+    let client;
+    try {
+      client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      await client.connect();
+      const db = client.db(DB_NAME);
+      const messagesCollection = db.collection("messages");
+      const deleteResult = await messagesCollection.deleteOne({
+        messageID: messageToDelete.messageID,
+      });
+      console.log("to be deleted: ", messageToDelete);
+      console.log("deleted", deleteResult);
+      return deleteResult;
+    } finally {
+      client.close();
+    }
+  };
 
   return studentHousingDB;
 };
