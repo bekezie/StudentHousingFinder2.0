@@ -254,7 +254,7 @@ let StudentHousingDBController = function () {
   };
 
   studentHousingDB.getRatingByIDS = async (listingID, user) => {
-    let client;
+let client;
     try {
       client = new MongoClient(uri, {
         useNewUrlParser: true,
@@ -267,23 +267,27 @@ let StudentHousingDBController = function () {
       const queryResult = await listingsCollection
         .aggregate([
           {
-            $unwind: {
-              path: "$rating",
+            $match: {
+              listingID: listingID,
+              "rating.raterID": user,
             },
           },
 
           {
-            $group: {
-              _id: listingID,
-              raterID: {
-                $last: user,
+            $project: {
+              rating: {
+                $filter: {
+                  input: "$rating",
+                  as: "item",
+                  cond: { $eq: ["$$item.raterID", user] },
+                },
               },
-              rating: { $last: "$rating.rating" },
             },
           },
         ])
         .toArray();
-      return queryResult;
+
+      return queryResult[0].rating;
     } finally {
       // we have to close the database connection otherwise we will overload the mongodb service.
       await client.close();
