@@ -30,7 +30,7 @@ let StudentHousingDBController = function () {
   // };
 
   //this function will save a new user to the database
-  studentHousingDB.createNewOwner = async newUser => {
+  studentHousingDB.createNewOwner = async (newUser) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -73,7 +73,7 @@ let StudentHousingDBController = function () {
     }
   };
 
-  studentHousingDB.createNewStudent = async newUser => {
+  studentHousingDB.createNewStudent = async (newUser) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -91,7 +91,7 @@ let StudentHousingDBController = function () {
     }
   };
 
-  studentHousingDB.getOwnerByAuthorID = async authorID => {
+  studentHousingDB.getOwnerByAuthorID = async (authorID) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -116,7 +116,7 @@ let StudentHousingDBController = function () {
   };
 
   // this function will query the database for a user object by using an username string
-  studentHousingDB.getUserByUsername = async query => {
+  studentHousingDB.getUserByUsername = async (query) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -139,7 +139,7 @@ let StudentHousingDBController = function () {
   };
 
   // this function will query the database for a user object by using an username string and password
-  studentHousingDB.getUserCred = async user => {
+  studentHousingDB.getUserCred = async (user) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -254,7 +254,7 @@ let StudentHousingDBController = function () {
   };
 
   studentHousingDB.getRatingByIDS = async (listingID, user) => {
-let client;
+    let client;
     try {
       client = new MongoClient(uri, {
         useNewUrlParser: true,
@@ -264,12 +264,13 @@ let client;
       const db = client.db(DB_NAME);
       const listingsCollection = db.collection("listings");
       // we will be using the user's email as their username
+
       const queryResult = await listingsCollection
         .aggregate([
           {
             $match: {
               listingID: listingID,
-              "rating.raterID": user,
+              //"rating.raterID": user,
             },
           },
 
@@ -295,7 +296,7 @@ let client;
   };
 
   // search Listings , may implement pagination later
-  studentHousingDB.searchListings = async searchCriteria => {
+  studentHousingDB.searchListings = async (searchCriteria) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -372,7 +373,7 @@ let client;
   };
 
   // // read selected Listing info
-  studentHousingDB.getListingByID = async listingID => {
+  studentHousingDB.getListingByID = async (listingID) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -395,7 +396,7 @@ let client;
   };
 
   // // read selected Listing info
-  studentHousingDB.getListingsByAuthorID = async authorID => {
+  studentHousingDB.getListingsByAuthorID = async (authorID) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -418,55 +419,69 @@ let client;
     }
   };
 
-  // studentHousingDB.createRating = async (newRating) => {
-  //   let db, stmt;
-  //   try {
-  //     db = await connect();
-
-  //     stmt = await db.prepare(`INSERT INTO
-  //       Rating(raterID, rating, listingID)
-  //       VALUES (:raterID, :rating, :listingID)
-  //     `);
-
-  //     stmt.bind({
-  //       ":raterID": newRating.user,
-  //       ":rating": newRating.rating,
-  //       ":listingID": newRating.listingID,
-  //     });
-
-  //     return await stmt.run();
-  //   } finally {
-  //     stmt.finalize();
-  //     db.close();
-  //   }
-  // };
-
-  // // update Listing info
-  // studentHousingDB.updateRating = async (ratingToUpdate) => {
-  //   let db, stmt;
-  //   try {
-  //     db = await connect();
-
-  //     stmt = await db.prepare(`UPDATE Rating
-  //     SET rating = :rating
-  //     WHERE listingID = :theIDToUpdate AND raterID = :raterID
-  //   `);
-
-  //     stmt.bind({
-  //       ":raterID": ratingToUpdate.raterID,
-  //       ":rating": ratingToUpdate.rating,
-  //       ":theIDToUpdate": ratingToUpdate.listingID,
-  //     });
-
-  //     return await stmt.run();
-  //   } finally {
-  //     stmt.finalize();
-  //     db.close();
-  //   }
-  // };
+  studentHousingDB.createRating = async (newRating) => {
+    let client;
+    try {
+      client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      await client.connect();
+      const db = client.db(DB_NAME);
+      const contactsCollection = db.collection("listings");
+      const updateResult = await contactsCollection.updateOne(
+        {
+          listingID: newRating.listingID,
+        },
+        {
+          $push: {
+            rating: {
+              raterID: newRating.user,
+              rating: newRating.rating,
+            },
+          },
+        }
+      );
+      return updateResult;
+    } finally {
+      await client.close();
+    }
+  };
 
   // // update Listing info
-  studentHousingDB.updateListing = async listingToUpdate => {
+  studentHousingDB.updateRating = async (ratingToUpdate) => {
+    let client;
+    try {
+      client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      await client.connect();
+      const db = client.db(DB_NAME);
+      const listingsCollection = db.collection("listings");
+      const updateResult = await listingsCollection.updateOne(
+        {
+          listingID: ratingToUpdate.listingID,
+        },
+        {
+          $set: {
+            rating: [
+              {
+                raterID: ratingToUpdate.raterID,
+                rating: ratingToUpdate.rating,
+              },
+            ],
+          },
+        }
+      );
+      return updateResult;
+    } finally {
+      await client.close();
+    }
+  };
+
+  // // update Listing info
+  studentHousingDB.updateListing = async (listingToUpdate) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -501,7 +516,7 @@ let client;
   };
 
   // // delete Listing
-  studentHousingDB.deleteListing = async listingToDelete => {
+  studentHousingDB.deleteListing = async (listingToDelete) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -524,7 +539,7 @@ let client;
   //  ***************MESSAGE CRUD OPERATIONS*********************
   //  */
 
-  studentHousingDB.createMessage = async newMessage => {
+  studentHousingDB.createMessage = async (newMessage) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -598,7 +613,7 @@ let client;
     }
   };
 
-  studentHousingDB.getAllMessages = async username => {
+  studentHousingDB.getAllMessages = async (username) => {
     let client;
     try {
       client = new MongoClient(uri, {
@@ -623,7 +638,7 @@ let client;
   };
 
   // delete Message
-  studentHousingDB.deleteMessage = async messageToDelete => {
+  studentHousingDB.deleteMessage = async (messageToDelete) => {
     let client;
     try {
       client = new MongoClient(uri, {
