@@ -408,9 +408,18 @@ let StudentHousingDBController = function () {
       const listingsCollection = db.collection("listings");
       // we will be using the user's email as their username
       const queryResult = await listingsCollection
-        .find({
-          authorID: authorID,
-        })
+        .aggregate([
+          {
+            $match: {
+              authorID: authorID,
+            },
+          },
+          {
+            $addFields: {
+              avgRating: { $avg: "$rating.rating" },
+            },
+          },
+        ])
         .toArray();
       return queryResult;
     } finally {
